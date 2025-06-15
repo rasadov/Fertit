@@ -1,12 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <div>
-        <h1>It works</h1>
-    </div>
-</body>
-</html>
+{{ define "title" }}Home Page{{ end }}
+
+{{ define "css" }}
+<style>
+    .welcome {
+        color: blue;
+    }
+</style>
+{{ end }}
+
+{{ define "content" }}
+<div>
+    <h1 class="welcome">It works</h1>
+    <p>Welcome to the Gin framework!</p>
+</div>
+{{ end }}
+
+{{ define "js" }}
+<script>
+    console.log("Home page loaded");
+</script>
+{{ end }}

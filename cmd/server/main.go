@@ -7,6 +7,7 @@ import (
 	"github.com/rasadov/MailManagerApp/internal/handlers"
 	"github.com/rasadov/MailManagerApp/internal/middleware"
 	"github.com/rasadov/MailManagerApp/internal/services"
+	"log"
 	"os"
 	"time"
 
@@ -40,7 +41,7 @@ func main() {
 	// Setup routes
 	r := setupRoutes(adminHandler, subscriberHandler, staticHandler, rateLimiter, authService)
 
-	r.Run(":8080")
+	log.Fatal(r.Run(":8080"))
 }
 
 func setupRoutes(
@@ -54,6 +55,7 @@ func setupRoutes(
 
 	// Load HTML templates
 	r.LoadHTMLGlob("web/templates/**/*.html")
+
 	r.Static("/static", "./web/static")
 
 	// ========== STATIC ROUTES ==========

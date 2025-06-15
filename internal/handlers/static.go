@@ -17,5 +17,7 @@ func (s *StaticHandler) Favicon(c *gin.Context) {
 }
 
 func (s *StaticHandler) Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", gin.H{})
+	c.HTML(http.StatusOK, "base.html", gin.H{
+		"Year": "2025",
+	})
 }
