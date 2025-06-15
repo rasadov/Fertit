@@ -2,17 +2,17 @@ package redis
 
 import (
 	"context"
+	"github.com/rasadov/MailManagerApp/internal/config"
 	"github.com/redis/go-redis/v9"
 	"log"
-	"os"
 )
 
 var Client *redis.Client
 
 func InitRedis(ctx context.Context) {
 	Client = redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDR"),
-		Password: os.Getenv("REDIS_PASSWORD"),
+		Addr:     config.AppConfig.RedisAddr,
+		Password: config.AppConfig.RedisPassword,
 		DB:       0, // default DB
 	})
 
