@@ -10,6 +10,7 @@ import (
 
 type SubscriberService interface {
 	GetSubscriber(uuid string) (models.Subscriber, error)
+	GetSubscribers(page, elements int) ([]models.Subscriber, error)
 	Subscribe(email string) error
 	Update(uuid string, policyUpdates, incidents, newFeatures, news, other bool) error
 }
@@ -29,6 +30,14 @@ func (s *subscriberService) GetSubscriber(uuid string) (models.Subscriber, error
 	res, err := s.repo.GetSubscriber(uuid)
 	if err != nil {
 		return models.Subscriber{}, err
+	}
+	return res, nil
+}
+
+func (s *subscriberService) GetSubscribers(page, elements int) ([]models.Subscriber, error) {
+	res, err := s.repo.ListSubscribers((page-1)*elements, elements)
+	if err != nil {
+		return []models.Subscriber{}, err
 	}
 	return res, nil
 }

@@ -4,36 +4,56 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rasadov/MailManagerApp/internal/config"
 	"github.com/rasadov/MailManagerApp/internal/services"
+	customErrors "github.com/rasadov/MailManagerApp/pkg/errors"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type AdminHandler struct {
-	rateLimiter  services.RateLimiter
-	authService  services.AuthService
-	emailService services.EmailService
+	rateLimiter       services.RateLimiter
+	authService       services.AuthService
+	emailService      services.EmailService
+	subscriberService services.SubscriberService
 }
 
 func NewAdminHandler(
 	rateLimiter services.RateLimiter,
 	authService services.AuthService,
 	emailService services.EmailService,
+	subscriberService services.SubscriberService,
 ) *AdminHandler {
 	return &AdminHandler{
-		rateLimiter:  rateLimiter,
-		authService:  authService,
-		emailService: emailService,
+		rateLimiter:       rateLimiter,
+		authService:       authService,
+		emailService:      emailService,
+		subscriberService: subscriberService,
 	}
 }
 
-func (h *AdminHandler) AdminLoginPage(c *gin.Context) {}
+func (h *AdminHandler) AdminLoginPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.html", gin.H{
+		"Year": "2025",
+	})
+}
 
 func (h *AdminHandler) LoginPost(c *gin.Context) {
 	ip := c.ClientIP()
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 
-	if err := h.authService.ValidateCredentials(c, username, password); err != nil {
+	isBlocked, err := h.rateLimiter.IsBlocked(c, ip)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err)
+	}
+
+	if isBlocked {
+		c.AbortWithStatusJSON(http.StatusTooManyRequests, customErrors.ErrTooManyAttempts)
+		return
+	}
+
+	if err = h.authService.ValidateCredentials(c, username, password); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
 			"message": "Invalid username or password",
@@ -71,6 +91,49 @@ func (h *AdminHandler) LoginPost(c *gin.Context) {
 	})
 }
 
-func (h *AdminHandler) AdminDashboard(c *gin.Context) {}
+func (h *AdminHandler) AdminDashboard(c *gin.Context) {
+	pageStr := c.DefaultQuery("page", "1")
+	elementsStr := c.DefaultQuery("elements", "10")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 || page > 100 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": "Invalid page number",
+		})
+		return
+	}
+
+	elements, err := strconv.Atoi(elementsStr)
+	if err != nil || elements < 1 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": "Invalid elements number",
+		})
+		return
+	}
+
+	if elements > 50 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": "Invalid elements number",
+		})
+		return
+	}
+
+	subscribers, err := h.subscriberService.GetSubscribers(page, elements)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve subscribers",
+		})
+		return
+	}
+
+	c.HTML(http.StatusOK, "dashboard.html", gin.H{
+		"Page":        page,
+		"Elements":    elements,
+		"Subscribers": subscribers,
+	})
+}
 
 func (h *AdminHandler) SendEmail(c *gin.Context) {}

@@ -34,7 +34,7 @@ func main() {
 	subscriberService := services.NewSubscriberService(db)
 
 	// Initialize handlers
-	adminHandler := handlers.NewAdminHandler(rateLimiter, authService, emailService)
+	adminHandler := handlers.NewAdminHandler(rateLimiter, authService, emailService, subscriberService)
 	subscriberHandler := handlers.NewSubscriberHandler(subscriberService)
 	staticHandler := handlers.NewStaticHandler()
 

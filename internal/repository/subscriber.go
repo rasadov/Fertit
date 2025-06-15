@@ -7,6 +7,7 @@ import (
 
 type SubscriberRepository interface {
 	GetSubscriber(uuid string) (models.Subscriber, error)
+	ListSubscribers(offset, limit int) ([]models.Subscriber, error)
 	GetSubscriberByEmail(email string) (models.Subscriber, error)
 	UpdateSubscriber(subscriber models.Subscriber) error
 	CreateSubscriber(subscriber models.Subscriber) error
@@ -34,6 +35,12 @@ func (r subscriberRepository) GetSubscriberByEmail(email string) (models.Subscri
 	res := r.db.First(&sub, "email = ?", email)
 
 	return sub, res.Error
+}
+
+func (r subscriberRepository) ListSubscribers(offset, limit int) ([]models.Subscriber, error) {
+	var subs []models.Subscriber
+	res := r.db.Offset(offset).Limit(limit).Find(&subs)
+	return subs, res.Error
 }
 
 func (r subscriberRepository) UpdateSubscriber(subscriber models.Subscriber) error {
