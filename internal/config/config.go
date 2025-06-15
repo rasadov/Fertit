@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"sync"
 )
@@ -8,6 +9,7 @@ import (
 type Settings struct {
 	Debug                  bool
 	TokenExpirationSeconds int
+	PostgresUrl            string
 }
 
 var (
@@ -26,8 +28,15 @@ func Init() error {
 func GetSettings() (*Settings, error) {
 	debug := os.Getenv("DEBUG") == "true"
 
+	PostgresUrl := os.Getenv("POSTGRES_URL")
+
+	if PostgresUrl == "" {
+		log.Fatal("POSTGRES_URL environment variable not set")
+	}
+
 	return &Settings{
 		Debug:                  debug,
 		TokenExpirationSeconds: 3600,
+		PostgresUrl:            PostgresUrl,
 	}, nil
 }

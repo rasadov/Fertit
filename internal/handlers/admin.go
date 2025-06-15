@@ -16,7 +16,20 @@ type AdminHandler struct {
 	db           *gorm.DB
 }
 
-func (h *AdminHandler) Login(c *gin.Context) {
+func NewAdminHandler(
+	rateLimiter services.RateLimiter,
+	authService services.AuthService,
+	emailService services.EmailService,
+	db *gorm.DB) *AdminHandler {
+	return &AdminHandler{
+		rateLimiter:  rateLimiter,
+		authService:  authService,
+		emailService: emailService,
+		db:           db,
+	}
+}
+
+func (h *AdminHandler) LoginPost(c *gin.Context) {
 	ip := c.ClientIP()
 	username := c.PostForm("username")
 	password := c.PostForm("password")
