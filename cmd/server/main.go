@@ -59,7 +59,6 @@ func setupRoutes(
 	// ========== STATIC ROUTES ==========
 	r.GET("/favicon.ico", staticHandler.Favicon)
 	r.GET("/", staticHandler.Index)
-	r.GET("/good-bye", staticHandler.Goodbye)
 
 	// ========== SUBSCRIBER ROUTES ==========
 	r.POST("/subscribe", subscriberHandler.Subscribe)

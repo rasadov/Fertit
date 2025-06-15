@@ -29,6 +29,8 @@ func NewAdminHandler(
 	}
 }
 
+func (h *AdminHandler) AdminLoginPage(c *gin.Context) {}
+
 func (h *AdminHandler) LoginPost(c *gin.Context) {
 	ip := c.ClientIP()
 	username := c.PostForm("username")
@@ -71,3 +73,7 @@ func (h *AdminHandler) LoginPost(c *gin.Context) {
 		"message": "Successfully logged in",
 	})
 }
+
+func (h *AdminHandler) AdminDashboard(c *gin.Context) {}
+
+func (h *AdminHandler) SendEmail(c *gin.Context) {}

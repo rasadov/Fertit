@@ -17,7 +17,7 @@ func AuthRequired(jwtService services.AuthService) gin.HandlerFunc {
 			return
 		}
 
-		token, err := jwtService.VerifyToken(c, authCookie)
+		token, err := jwtService.VerifyToken(authCookie)
 		if err != nil {
 			c.Set("userID", "")
 			c.Next()
