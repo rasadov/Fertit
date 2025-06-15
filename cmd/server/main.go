@@ -34,8 +34,8 @@ func main() {
 	subscriberService := services.NewSubscriberService(db)
 
 	// Initialize handlers
-	adminHandler := handlers.NewAdminHandler(rateLimiter, authService, emailService, db)
-	subscriberHandler := handlers.NewSubscriberHandler(subscriberService, db)
+	adminHandler := handlers.NewAdminHandler(rateLimiter, authService, emailService)
+	subscriberHandler := handlers.NewSubscriberHandler(subscriberService)
 	staticHandler := handlers.NewStaticHandler()
 
 	// Setup routes
@@ -64,7 +64,7 @@ func setupRoutes(
 
 	// ========== SUBSCRIBER ROUTES ==========
 	r.POST("/subscribe", subscriberHandler.Subscribe)
-	r.GET("/preferences/:uuid", subscriberHandler.ManagePreferences)
+	r.GET("/preferences/:uuid", subscriberHandler.ManagePreferencesPage)
 	r.POST("/preferences/:uuid", subscriberHandler.UpdatePreferences)
 
 	// ========== ADMIN ROUTES ==========

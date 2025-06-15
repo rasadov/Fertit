@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rasadov/MailManagerApp/internal/config"
 	"github.com/rasadov/MailManagerApp/internal/services"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 )
@@ -13,19 +12,17 @@ type AdminHandler struct {
 	rateLimiter  services.RateLimiter
 	authService  services.AuthService
 	emailService services.EmailService
-	db           *gorm.DB
 }
 
 func NewAdminHandler(
 	rateLimiter services.RateLimiter,
 	authService services.AuthService,
 	emailService services.EmailService,
-	db *gorm.DB) *AdminHandler {
+) *AdminHandler {
 	return &AdminHandler{
 		rateLimiter:  rateLimiter,
 		authService:  authService,
 		emailService: emailService,
-		db:           db,
 	}
 }
 
