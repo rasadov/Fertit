@@ -22,7 +22,7 @@ type RedisRateLimiter struct {
 	window   time.Duration
 }
 
-func NewRedisRateLimiter(client *redis.Client, maxTries int, window time.Duration) *RedisRateLimiter {
+func NewRateLimiter(client *redis.Client, maxTries int, window time.Duration) RateLimiter {
 	return &RedisRateLimiter{
 		client:   client,
 		maxTries: maxTries,

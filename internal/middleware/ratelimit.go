@@ -7,7 +7,7 @@ import (
 	"github.com/rasadov/MailManagerApp/internal/services"
 )
 
-func RateLimitMiddleware(limiter *services.RedisRateLimiter) gin.HandlerFunc {
+func RateLimitMiddleware(limiter services.RateLimiter) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ip := c.ClientIP()
 		ctx := c.Request.Context()

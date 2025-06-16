@@ -23,7 +23,7 @@ func main() {
 	redis.InitRedis(ctx)
 
 	// Initialize services
-	rateLimiter := services.NewRedisRateLimiter(redis.Client, 3, 15*time.Minute)
+	rateLimiter := services.NewRateLimiter(redis.Client, 3, 15*time.Minute)
 	authService := services.NewJWTAuthService(os.Getenv("JWT_SECRET"), os.Getenv("JWT_ISSUER"), db)
 	emailService := services.NewSMTPEmailService(
 		os.Getenv("SMTP_HOST"),
@@ -48,7 +48,7 @@ func setupRoutes(
 	adminHandler *handlers.AdminHandler,
 	subscriberHandler *handlers.SubscriberHandler,
 	staticHandler *handlers.StaticHandler,
-	rateLimiter *services.RedisRateLimiter,
+	rateLimiter services.RateLimiter,
 	authService services.AuthService,
 ) *gin.Engine {
 	r := gin.Default()
