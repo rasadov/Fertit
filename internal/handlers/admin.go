@@ -53,7 +53,7 @@ func (h *AdminHandler) LoginPost(c *gin.Context) {
 		return
 	}
 
-	if err = h.authService.ValidateCredentials(c, username, password); err != nil {
+	if err = h.authService.ValidateCredentials(username, password); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
 			"message": "Invalid username or password",
@@ -66,7 +66,7 @@ func (h *AdminHandler) LoginPost(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.GenerateToken(c, username)
+	token, err := h.authService.GenerateToken(username)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
@@ -136,4 +136,27 @@ func (h *AdminHandler) AdminDashboard(c *gin.Context) {
 	})
 }
 
-func (h *AdminHandler) SendEmail(c *gin.Context) {}
+func (h *AdminHandler) SendEmail(c *gin.Context) {
+	category := c.PostForm("category")
+	subject := c.PostForm("subject")
+	body := c.PostForm("body")
+	isHtml := c.PostForm("html") == "1"
+
+	emails, err := h.subscriberService.GetSubscribersByCategory(category)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve subscribers",
+		})
+	}
+
+	err = h.emailService.SendNewsletter(emails, subject, body, isHtml)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to send email",
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}

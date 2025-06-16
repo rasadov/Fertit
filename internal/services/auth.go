@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
@@ -10,8 +9,8 @@ import (
 )
 
 type AuthService interface {
-	ValidateCredentials(ctx context.Context, username, password string) error
-	GenerateToken(ctx context.Context, username string) (string, error)
+	ValidateCredentials(username, password string) error
+	GenerateToken(username string) (string, error)
 	VerifyToken(token string) (*jwt.Token, error)
 }
 
@@ -54,10 +53,10 @@ func (s *authService) VerifyToken(encodedToken string) (*jwt.Token, error) {
 	return nil, errors.New("invalid token claims")
 }
 
-func (s *authService) ValidateCredentials(ctx context.Context, username, password string) error {
+func (s *authService) ValidateCredentials(username, password string) error {
 	return nil
 }
 
-func (s *authService) GenerateToken(ctx context.Context, username string) (string, error) {
+func (s *authService) GenerateToken(username string) (string, error) {
 	return "", nil
 }

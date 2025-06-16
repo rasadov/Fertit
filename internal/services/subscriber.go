@@ -11,6 +11,7 @@ import (
 type SubscriberService interface {
 	GetSubscriber(uuid string) (models.Subscriber, error)
 	GetSubscribers(page, elements int) ([]models.Subscriber, error)
+	GetSubscribersByCategory(category string) ([]string, error)
 	Subscribe(email string) error
 	Update(uuid string, policyUpdates, incidents, newFeatures, news, other bool) error
 }
@@ -40,6 +41,14 @@ func (s *subscriberService) GetSubscribers(page, elements int) ([]models.Subscri
 		return []models.Subscriber{}, err
 	}
 	return res, nil
+}
+
+func (s *subscriberService) GetSubscribersByCategory(category string) ([]string, error) {
+	emails, err := s.repo.ListCategorySubscriberEmails(category)
+	if err != nil {
+		return nil, err
+	}
+	return emails, nil
 }
 
 func (s *subscriberService) Subscribe(email string) error {
