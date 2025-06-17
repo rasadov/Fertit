@@ -76,7 +76,7 @@ func (s *SMTPEmailService) SendNewsletter(subscribers []utils.SubscriberEmail, s
 
 	// Send individual email jobs with UUID for unsubscribe links
 	for i, subscriber := range subscribers {
-		// Add unsubscribe link to email body
+		// Add an unsubscribe link to email body
 		personalizedBody := s.addUnsubscribeLink(body, subscriber.Uuid, isHTML)
 
 		jobChan <- utils.NewsletterJob{
@@ -96,9 +96,9 @@ func (s *SMTPEmailService) SendNewsletter(subscribers []utils.SubscriberEmail, s
 	return nil
 }
 
-// addUnsubscribeLink adds unsubscribe link to email body
+// addUnsubscribeLink adds an unsubscribe link to email body
 func (s *SMTPEmailService) addUnsubscribeLink(body, uuid string, isHTML bool) string {
-	unsubscribeURL := fmt.Sprintf("%s/unsubscribe?token=%s", s.baseURL, uuid)
+	unsubscribeURL := fmt.Sprintf("%s/preferences/%s", s.baseURL, uuid)
 
 	if isHTML {
 		unsubscribeLink := fmt.Sprintf(`<p><a href="%s">Unsubscribe</a> | <a href="%s">Manage Preferences</a></p>`, unsubscribeURL, unsubscribeURL)

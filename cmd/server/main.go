@@ -31,6 +31,7 @@ func main() {
 		config.AppConfig.SmtpPort,
 		config.AppConfig.SmtpUsername,
 		config.AppConfig.SmtpPassword,
+		config.AppConfig.BaseUrl,
 	)
 	subscriberService := services.NewSubscriberService(db)
 

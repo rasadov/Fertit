@@ -10,6 +10,7 @@ import (
 
 type Settings struct {
 	Debug                  bool
+	BaseUrl                string
 	JWTSecret              string
 	JWTIssuer              string
 	TokenExpirationSeconds int
@@ -60,6 +61,8 @@ func GetSettings() (*Settings, error) {
 	smtpPassword := os.Getenv("SMTP_PASSWORD")
 	smtpPort := os.Getenv("SMTP_PORT")
 
+	baseUrl := os.Getenv("BASE_URL")
+
 	smtpPortInt, err := strconv.Atoi(smtpPort)
 	if err != nil {
 		return nil, err
@@ -98,6 +101,7 @@ func GetSettings() (*Settings, error) {
 
 	return &Settings{
 		Debug:                  debug,
+		BaseUrl:                baseUrl,
 		JWTSecret:              jwtSecret,
 		JWTIssuer:              jwtIssuer,
 		TokenExpirationSeconds: 3600,

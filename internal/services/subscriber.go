@@ -5,13 +5,14 @@ import (
 	"github.com/rasadov/MailManagerApp/internal/models"
 	"github.com/rasadov/MailManagerApp/internal/repository"
 	customErrors "github.com/rasadov/MailManagerApp/pkg/errors"
+	"github.com/rasadov/MailManagerApp/pkg/utils"
 	"gorm.io/gorm"
 )
 
 type SubscriberService interface {
 	GetSubscriber(uuid string) (models.Subscriber, error)
 	GetSubscribers(page, elements int) ([]models.Subscriber, error)
-	GetSubscribersByCategory(category string) ([]models.SubscriberEmail, error)
+	GetSubscribersByCategory(category string) ([]utils.SubscriberEmail, error)
 	Subscribe(email string) error
 	Update(uuid string, policyUpdates, incidents, newFeatures, news, other bool) error
 }
@@ -43,7 +44,7 @@ func (s *subscriberService) GetSubscribers(page, elements int) ([]models.Subscri
 	return res, nil
 }
 
-func (s *subscriberService) GetSubscribersByCategory(category string) ([]models.SubscriberEmail, error) {
+func (s *subscriberService) GetSubscribersByCategory(category string) ([]utils.SubscriberEmail, error) {
 	emails, err := s.repo.ListCategorySubscriberEmails(category)
 	if err != nil {
 		return nil, err
