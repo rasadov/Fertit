@@ -11,21 +11,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-    environment:
-      - JWT_SECRET=your_jwt_secret
-      - JWT_ISSUER=mailmanager
-      - SMTP_HOST=smtp.example.com
-      - SMTP_USER=your_smtp_user
-      - SMTP_PASS=your_smtp_password
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=mailmanager
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=
-      - DEBUG=true
+    env_file:
+      - ".env"
     restart: unless-stopped
 
   postgres:
@@ -41,12 +28,10 @@ services:
       start_period: 10s
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=mailmanager
+    env_file:
+      - ".env"
     ports:
-      - "5433:5432"  # Changed from 5432:5432
+      - "5433:5432"
     restart: unless-stopped
 
   redis:

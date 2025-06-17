@@ -4,16 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/rasadov/MailManagerApp/internal/models"
 	"github.com/rasadov/MailManagerApp/internal/repository"
 	"github.com/rasadov/MailManagerApp/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"log"
 )
 
 type AuthService interface {
 	ValidateCredentials(username, password string) error
 	GenerateToken(username string) (string, error)
 	VerifyToken(token string) (*jwt.Token, error)
+	EnsureAdminUser(username, password string) error
 }
 
 type authService struct {
@@ -90,4 +93,25 @@ func (s *authService) GenerateToken(username string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func (s *authService) EnsureAdminUser(username, password string) error {
+	_, err := s.userRepository.GetUser(username)
+	if err == nil {
+		log.Println("Admin user already exists")
+		return nil
+	}
+
+	err = s.userRepository.CreateUser(models.User{
+		Username: username,
+		Password: password,
+	})
+
+	if err != nil {
+		log.Println("Failed to create admin user")
+		return err
+	}
+
+	log.Println("Admin user created")
+	return nil
 }

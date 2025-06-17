@@ -4,15 +4,24 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"sync"
 )
 
 type Settings struct {
 	Debug                  bool
+	JWTSecret              string
+	JWTIssuer              string
 	TokenExpirationSeconds int
 	PostgresUrl            string
 	RedisAddr              string
 	RedisPassword          string
+	AdminUsername          string
+	AdminPassword          string
+	SmtpHost               string
+	SmtpPort               int
+	SmtpUsername           string
+	SmtpPassword           string
 }
 
 var (
@@ -34,11 +43,27 @@ func init() {
 func GetSettings() (*Settings, error) {
 	debug := os.Getenv("DEBUG") == "true"
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	jwtIssuer := os.Getenv("JWT_ISSUER")
+
 	postgresHost := os.Getenv("POSTGRES_HOST")
 	postgresPort := os.Getenv("POSTGRES_PORT")
 	postgresUser := os.Getenv("POSTGRES_USER")
 	postgresPassword := os.Getenv("POSTGRES_PASSWORD")
 	postgresDB := os.Getenv("POSTGRES_DB")
+
+	adminUsername := os.Getenv("ADMIN_USERNAME")
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
+
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPassword := os.Getenv("SMTP_PASSWORD")
+	smtpPort := os.Getenv("SMTP_PORT")
+
+	smtpPortInt, err := strconv.Atoi(smtpPort)
+	if err != nil {
+		return nil, err
+	}
 
 	// Default values if not provided
 	if postgresHost == "" {
@@ -73,9 +98,21 @@ func GetSettings() (*Settings, error) {
 
 	return &Settings{
 		Debug:                  debug,
+		JWTSecret:              jwtSecret,
+		JWTIssuer:              jwtIssuer,
 		TokenExpirationSeconds: 3600,
-		PostgresUrl:            postgresUrl,
-		RedisAddr:              redisAddr,
-		RedisPassword:          redisPassword,
+
+		PostgresUrl: postgresUrl,
+
+		RedisAddr:     redisAddr,
+		RedisPassword: redisPassword,
+
+		AdminUsername: adminUsername,
+		AdminPassword: adminPassword,
+
+		SmtpHost:     smtpHost,
+		SmtpPort:     smtpPortInt,
+		SmtpUsername: smtpUser,
+		SmtpPassword: smtpPassword,
 	}, nil
 }

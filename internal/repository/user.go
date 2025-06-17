@@ -7,6 +7,7 @@ import (
 
 type UserRepository interface {
 	GetUser(username string) (models.User, error)
+	CreateUser(user models.User) error
 }
 
 type userRepository struct {
@@ -27,4 +28,8 @@ func (r *userRepository) GetUser(username string) (models.User, error) {
 		return models.User{}, err
 	}
 	return admin, nil
+}
+
+func (r *userRepository) CreateUser(user models.User) error {
+	return r.db.Create(&user).Error
 }

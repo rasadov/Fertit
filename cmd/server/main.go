@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	"github.com/rasadov/MailManagerApp/internal/config"
 	"github.com/rasadov/MailManagerApp/internal/database/postgres"
 	"github.com/rasadov/MailManagerApp/internal/database/redis"
 	"github.com/rasadov/MailManagerApp/internal/handlers"
 	"github.com/rasadov/MailManagerApp/internal/middleware"
 	"github.com/rasadov/MailManagerApp/internal/services"
 	"log"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -24,14 +24,21 @@ func main() {
 
 	// Initialize services
 	rateLimiter := services.NewRateLimiter(redis.Client, 3, 15*time.Minute)
-	authService := services.NewJWTAuthService(os.Getenv("JWT_SECRET"), os.Getenv("JWT_ISSUER"), db)
+	authService := services.NewJWTAuthService(config.AppConfig.JWTSecret, config.AppConfig.JWTIssuer, db)
 	emailService := services.NewSMTPEmailService(
-		os.Getenv("SMTP_HOST"),
-		587,
-		os.Getenv("SMTP_USER"),
-		os.Getenv("SMTP_PASS"),
+		config.AppConfig.SmtpHost,
+		config.AppConfig.SmtpPort,
+		config.AppConfig.SmtpUsername,
+		config.AppConfig.SmtpPassword,
 	)
 	subscriberService := services.NewSubscriberService(db)
+
+	// Ensure admin user is present
+	err := authService.EnsureAdminUser(config.AppConfig.AdminUsername, config.AppConfig.AdminPassword)
+
+	if err != nil {
+		log.Println("Error ensuring admin user")
+	}
 
 	// Initialize handlers
 	adminHandler := handlers.NewAdminHandler(rateLimiter, authService, emailService, subscriberService)
