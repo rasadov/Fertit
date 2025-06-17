@@ -6,10 +6,13 @@ import (
 )
 
 type StaticHandler struct {
+	StaticDir string
 }
 
-func NewStaticHandler() *StaticHandler {
-	return &StaticHandler{}
+func NewStaticHandler(staticDir string) *StaticHandler {
+	return &StaticHandler{
+		StaticDir: staticDir,
+	}
 }
 
 func (s *StaticHandler) Favicon(c *gin.Context) {

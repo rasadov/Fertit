@@ -8,6 +8,7 @@ import (
 	"github.com/rasadov/MailManagerApp/internal/handlers"
 	"github.com/rasadov/MailManagerApp/internal/middleware"
 	"github.com/rasadov/MailManagerApp/internal/services"
+	"html/template"
 	"log"
 	"time"
 
@@ -43,7 +44,7 @@ func main() {
 	// Initialize handlers
 	adminHandler := handlers.NewAdminHandler(rateLimiter, authService, emailService, subscriberService)
 	subscriberHandler := handlers.NewSubscriberHandler(subscriberService)
-	staticHandler := handlers.NewStaticHandler()
+	staticHandler := handlers.NewStaticHandler("./web/static")
 
 	// Setup routes
 	r := setupRoutes(adminHandler, subscriberHandler, staticHandler, rateLimiter, authService)
@@ -60,8 +61,24 @@ func setupRoutes(
 ) *gin.Engine {
 	r := gin.Default()
 
+	r.SetFuncMap(template.FuncMap{
+		"add": func(a, b int) int {
+			return a + b
+		},
+		"sub": func(a, b int) int {
+			return a - b
+		},
+		"iterate": func(start, end int) []int {
+			var result []int
+			for i := start; i <= end; i++ {
+				result = append(result, i)
+			}
+			return result
+		},
+	})
+
 	// Load HTML templates
-	r.LoadHTMLGlob("web/templates/**/*.html")
+	r.LoadHTMLGlob("web/templates/*")
 
 	r.Static("/static", "./web/static")
 

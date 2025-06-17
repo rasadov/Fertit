@@ -10,6 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 type AuthService interface {
@@ -46,6 +47,8 @@ func (s *authService) VerifyToken(encodedToken string) (*jwt.Token, error) {
 		},
 	)
 	if err != nil {
+		log.Println("There was a problem verifying the token")
+		log.Println(err)
 		return nil, err
 	}
 
@@ -56,14 +59,22 @@ func (s *authService) VerifyToken(encodedToken string) (*jwt.Token, error) {
 		return token, nil
 	}
 
+	log.Println("Invalid token")
 	return nil, errors.New("invalid token claims")
 }
 
 func (s *authService) ValidateCredentials(username, password string) error {
 	user, err := s.userRepository.GetUser(username)
 
+	log.Println("Credentials:")
+	log.Println(username, password)
+
 	if err != nil {
 		return err
+	}
+
+	if len(password) < 8 || len(password) > 128 {
+		return errors.New("password length must be between 8 and 128")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
@@ -83,6 +94,11 @@ func (s *authService) GenerateToken(username string) (string, error) {
 
 	tokenData := &utils.JWTCustomClaims{
 		Username: username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    s.Issuer,
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenData)
@@ -96,15 +112,25 @@ func (s *authService) GenerateToken(username string) (string, error) {
 }
 
 func (s *authService) EnsureAdminUser(username, password string) error {
+	if len(password) < 8 || len(password) > 128 {
+		return errors.New("password length must be between 8 and 128")
+	}
+
 	_, err := s.userRepository.GetUser(username)
 	if err == nil {
 		log.Println("Admin user already exists")
 		return nil
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return err
+	}
+
 	err = s.userRepository.CreateUser(models.User{
 		Username: username,
-		Password: password,
+		Password: string(hashedPassword),
 	})
 
 	if err != nil {

@@ -32,7 +32,7 @@ func NewAdminHandler(
 }
 
 func (h *AdminHandler) AdminLoginPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "login.html", gin.H{
+	c.HTML(http.StatusOK, "login.tmpl", gin.H{
 		"Year": "2025",
 	})
 }
@@ -123,13 +123,14 @@ func (h *AdminHandler) AdminDashboard(c *gin.Context) {
 
 	subscribers, err := h.subscriberService.GetSubscribers(page, elements)
 	if err != nil {
+		log.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to retrieve subscribers",
 		})
 		return
 	}
 
-	c.HTML(http.StatusOK, "dashboard.html", gin.H{
+	c.HTML(http.StatusOK, "dashboard.tmpl", gin.H{
 		"Page":        page,
 		"Elements":    elements,
 		"Subscribers": subscribers,

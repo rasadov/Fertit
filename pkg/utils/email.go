@@ -14,11 +14,18 @@ type EmailJob struct {
 
 // NewsletterJob represents a batch newsletter job
 type NewsletterJob struct {
-	BatchID     int
-	Subscribers []string
-	Subject     string
-	Body        string
-	IsHTML      bool
+	UUID      string
+	BatchID   int
+	Recipient string
+	Subject   string
+	Body      string
+	IsHTML    bool
+}
+
+// SubscriberEmail used to retrieve email and uuid of user from the database
+type SubscriberEmail struct {
+	Uuid  string `json:"uuid,omitempty"`
+	Email string `json:"email"`
 }
 
 // EmailMessage represents an email message

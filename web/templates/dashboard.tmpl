@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Manage your email campaigns and subscribers</p>
+
+    <div id="alerts"></div>
+
+    <!-- Send Email Section -->
+    <div>
+        <h2>Send Newsletter</h2>
+        <form id="emailForm" method="POST" action="/admin/send-email">
+            <div>
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="">Select category...</option>
+                    <option value="all">All Subscribers</option>
+                    <option value="policy_updates">Policy Updates</option>
+                    <option value="incident">Incident</option>
+                    <option value="new_features">New Features</option>
+                    <option value="news">News</option>
+                    <option value="others">Updates</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" required>
+            </div>
+
+            <div>
+                <label for="body">Message:</label>
+                <textarea id="body" name="body" rows="5" required></textarea>
+            </div>
+
+            <div>
+                <input type="checkbox" id="html" name="html" value="1">
+                <label for="html">Send as HTML</label>
+            </div>
+
+            <button type="submit">Send Newsletter</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- Add Subscriber Section -->
+    <div>
+        <h2>Add New Subscriber</h2>
+        <form id="userForm">
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div>
+                <label for="name">Name (Optional):</label>
+                <input type="text" id="name" name="name">
+            </div>
+
+            <div>
+                <label for="userCategory">Categories:</label>
+                <select id="userCategory" name="categories" multiple>
+                    <option value="general">General</option>
+                    <option value="news">News</option>
+                    <option value="updates">Updates</option>
+                    <option value="promotions">Promotions</option>
+                </select>
+                <small>Hold Ctrl/Cmd to select multiple</small>
+            </div>
+
+            <button type="submit">Add Subscriber</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- Subscribers List -->
+    <div>
+        <h2>Subscribers</h2>
+
+        <div>
+            <select id="elementsPerPage">
+                <option value="10" {{if eq .Elements 10}}selected{{end}}>10 per page</option>
+                <option value="25" {{if eq .Elements 25}}selected{{end}}>25 per page</option>
+                <option value="50" {{if eq .Elements 50}}selected{{end}}>50 per page</option>
+            </select>
+            <button onclick="location.reload()">Refresh</button>
+        </div>
+
+        {{if .Subscribers}}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Categories</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Subscribers}}
+                <tr>
+                    <td>{{.Email}}</td>
+                    <td>{{if .Name}}{{.Name}}{{else}}-{{end}}</td>
+                    <td>{{if .Categories}}{{.Categories}}{{else}}General{{end}}</td>
+                    <td>{{if .IsActive}}Active{{else}}Inactive{{end}}</td>
+                    <td>{{if .CreatedAt}}{{.CreatedAt.Format "Jan 02, 2006"}}{{else}}-{{end}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+
+        <div>
+            {{if gt .Page 1}}
+                <a href="?page={{sub .Page 1}}&elements={{.Elements}}">Previous</a>
+            {{end}}
+
+            Page {{.Page}}
+
+            <a href="?page={{add .Page 1}}&elements={{.Elements}}">Next</a>
+        </div>
+        {{else}}
+        <p>No subscribers found.</p>
+        {{end}}
+    </div>
+
+    <footer>
+        <p>&copy; {{.Year}} <a href="https://github.com/rasadov">rasadov</a> Application</p>
+    </footer>
+
+    <script>
+        function showAlert(message, type) {
+            const alertsContainer = document.getElementById('alerts');
+            alertsContainer.innerHTML = '<div style="color: ' + (type === 'error' ? 'red' : 'green') + '">' + message + '</div>';
+            setTimeout(() => { alertsContainer.innerHTML = ''; }, 5000);
+        }
+
+        function setLoading(form, loading) {
+            const button = form.querySelector('button[type="submit"]');
+            if (loading) {
+                button.disabled = true;
+                button.textContent = 'Processing...';
+            } else {
+                button.disabled = false;
+                button.textContent = form.id === 'emailForm' ? 'Send Newsletter' : 'Add Subscriber';
+            }
+        }
+
+        // Email form
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            setLoading(this, true);
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('/admin/send-email', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showAlert('Newsletter sent successfully!', 'success');
+                    this.reset();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.error || 'Failed to send newsletter', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error occurred', 'error');
+            } finally {
+                setLoading(this, false);
+            }
+        });
+
+        // User form
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            setLoading(this, true);
+
+            const formData = new FormData(this);
+
+            // Handle multiple categories
+            const selectedCategories = Array.from(document.getElementById('userCategory').selectedOptions)
+                .map(option => option.value);
+
+            if (selectedCategories.length > 0) {
+                formData.set('categories', selectedCategories.join(','));
+            } else {
+                formData.set('categories', 'general');
+            }
+
+            try {
+                const response = await fetch('/subscribe', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showAlert('Subscriber added successfully!', 'success');
+                    this.reset();
+                    setTimeout(() => { location.reload(); }, 2000);
+                } else {
+                    const error = await response.json();
+                    showAlert(error.error || 'Failed to add subscriber', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error occurred', 'error');
+            } finally {
+                setLoading(this, false);
+            }
+        });
+
+        // Elements per page
+        document.getElementById('elementsPerPage').addEventListener('change', function() {
+            const elements = this.value;
+            const url = new URL(window.location);
+            url.searchParams.set('elements', elements);
+            url.searchParams.set('page', '1');
+            window.location.href = url.toString();
+        });
+    </script>
+</body>
+</html>

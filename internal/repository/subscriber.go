@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/rasadov/MailManagerApp/internal/models"
+	"github.com/rasadov/MailManagerApp/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -9,7 +10,7 @@ import (
 type SubscriberRepository interface {
 	GetSubscriber(uuid string) (models.Subscriber, error)
 	ListSubscribers(offset, limit int) ([]models.Subscriber, error)
-	ListCategorySubscriberEmails(category string) ([]string, error)
+	ListCategorySubscriberEmails(category string) ([]utils.SubscriberEmail, error)
 	GetSubscriberByEmail(email string) (models.Subscriber, error)
 	UpdateSubscriber(subscriber models.Subscriber) error
 	CreateSubscriber(subscriber models.Subscriber) error
@@ -46,14 +47,18 @@ func (r subscriberRepository) ListSubscribers(offset, limit int) ([]models.Subsc
 	return subs, res.Error
 }
 
-func (r subscriberRepository) ListCategorySubscriberEmails(category string) ([]string, error) {
-	var emails []string
-	res := r.db.Model(&models.Subscriber{}).
-		Select("email").
-		Where(category+" = ?", true).
-		Pluck("email", &emails)
+func (r subscriberRepository) ListCategorySubscriberEmails(category string) ([]utils.SubscriberEmail, error) {
+	var subscribers []utils.SubscriberEmail
 
-	return emails, res.Error
+	query := r.db.Model(&models.Subscriber{}).
+		Select("email, uuid")
+
+	if category != "all" {
+		query = query.Where(category+" = ?", true)
+	}
+
+	err := query.Find(&subscribers).Error
+	return subscribers, err
 }
 
 func (r subscriberRepository) UpdateSubscriber(subscriber models.Subscriber) error {

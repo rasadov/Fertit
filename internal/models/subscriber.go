@@ -1,11 +1,12 @@
 package models
 
 type Subscriber struct {
-	Uuid          string `json:"uuid" gorm:"primary_key"`
+	Uuid          string `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"uuid,omitempty"`
 	Email         string `json:"email"`
 	PolicyUpdates bool   `json:"policyUpdates"`
 	Incidents     bool   `json:"incidents"`
 	NewFeatures   bool   `json:"newFeatures"`
 	News          bool   `json:"news"`
-	Other         bool   `json:"other"`
+	Others        bool   `json:"others"`
+	CreatedAt     string `gorm:"type:datetime;default:now()" json:"createdAt,omitempty"`
 }
