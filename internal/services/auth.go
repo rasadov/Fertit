@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/rasadov/MailManagerApp/internal/repository"
 	"github.com/rasadov/MailManagerApp/pkg/utils"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -15,16 +17,17 @@ type AuthService interface {
 }
 
 type authService struct {
-	SecretKey string
-	Issuer    string
-	db        *gorm.DB
+	SecretKey      string
+	Issuer         string
+	userRepository repository.UserRepository
 }
 
 func NewJWTAuthService(SecretKey, Issuer string, db *gorm.DB) AuthService {
+	userRepository := repository.NewUserRepository(db)
 	return &authService{
-		SecretKey: SecretKey,
-		Issuer:    Issuer,
-		db:        db,
+		SecretKey:      SecretKey,
+		Issuer:         Issuer,
+		userRepository: userRepository,
 	}
 }
 
@@ -54,9 +57,37 @@ func (s *authService) VerifyToken(encodedToken string) (*jwt.Token, error) {
 }
 
 func (s *authService) ValidateCredentials(username, password string) error {
+	user, err := s.userRepository.GetUser(username)
+
+	if err != nil {
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (s *authService) GenerateToken(username string) (string, error) {
-	return "", nil
+	_, err := s.userRepository.GetUser(username)
+	if err != nil {
+		return "", err
+	}
+
+	tokenData := &utils.JWTCustomClaims{
+		Username: username,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenData)
+
+	tokenString, err := token.SignedString([]byte(s.SecretKey))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
