@@ -13,7 +13,7 @@ EXECUTE FUNCTION set_created_at();
 CREATE OR REPLACE FUNCTION check_subscription_status()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.incidents = FALSE AND NEW.new_features = FALSE AND NEW.others = FALSE AND NEW.news = FALSE AND NEW.policyUpdates = FALSE THEN
+    IF NEW.incidents = FALSE AND NEW.new_features = FALSE AND NEW.others = FALSE AND NEW.news = FALSE AND NEW.policy_updates = FALSE THEN
         -- All preferences are turned off, we could log this or handle it differently
         -- For now, just updating a tracking field would be one option
         RAISE NOTICE 'User % has unsubscribed from all categories', NEW.email;

@@ -77,15 +77,13 @@ func (s *subscriberService) Update(uuid string, policyUpdates, incidents, newFea
 		return err
 	}
 
-	err = s.repo.UpdateSubscriber(models.Subscriber{
-		Uuid:          subscriber.Uuid,
-		Email:         subscriber.Email,
-		PolicyUpdates: policyUpdates,
-		Incidents:     incidents,
-		NewFeatures:   newFeatures,
-		News:          news,
-		Others:        other,
-	})
+	subscriber.PolicyUpdates = policyUpdates
+	subscriber.Incidents = incidents
+	subscriber.NewFeatures = newFeatures
+	subscriber.News = news
+	subscriber.Others = other
+
+	err = s.repo.UpdateSubscriber(subscriber)
 
 	if err != nil {
 		return err

@@ -50,7 +50,7 @@ func (s *SubscriberHandler) ManagePreferencesPage(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "preferences.html", gin.H{
+	c.HTML(http.StatusOK, "preferences.tmpl", gin.H{
 		"subscriber": subscriber,
 		"Year":       "2025",
 	})
@@ -58,9 +58,9 @@ func (s *SubscriberHandler) ManagePreferencesPage(c *gin.Context) {
 
 func (s *SubscriberHandler) UpdatePreferences(c *gin.Context) {
 	uuid := c.PostForm("uuid")
-	policyUpdates := c.PostForm("policyUpdates") == "on"
+	policyUpdates := c.PostForm("policy") == "on"
 	incident := c.PostForm("incident") == "on"
-	newFeatures := c.PostForm("newFeatures") == "on"
+	newFeatures := c.PostForm("features") == "on"
 	news := c.PostForm("news") == "on"
 	other := c.PostForm("other") == "on"
 

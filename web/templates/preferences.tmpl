@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Email Preferences</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .email-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background-color 0.2s;
+        }
+        .checkbox-group:hover {
+            background-color: #f8f9fa;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        .checkbox-label {
+            flex: 1;
+        }
+        .category-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .category-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 4px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        .unsubscribe-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .unsubscribe-text {
+            text-align: center;
+            color: #666;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Email Preferences</h1>
+        <p class="subtitle">Choose which types of emails you'd like to receive</p>
+
+        <div class="email-info">
+            <strong>Email:</strong> {{.subscriber.Email}}
+        </div>
+
+        <div id="alerts"></div>
+
+        <form id="preferencesForm">
+            <input type="hidden" name="uuid" value="{{.subscriber.Uuid}}">
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="policyUpdates" name="policyUpdates"
+                           {{if .subscriber.PolicyUpdates}}checked{{end}}>
+                    <label for="policyUpdates" class="checkbox-label">
+                        <div class="category-title">Policy Updates</div>
+                        <div class="category-description">Important updates about our policies and terms of service</div>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="incident" name="incident"
+                           {{if .subscriber.Incidents}}checked{{end}}>
+                    <label for="incident" class="checkbox-label">
+                        <div class="category-title">Incident Notifications</div>
+                        <div class="category-description">Critical alerts about service outages and incidents</div>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="newFeatures" name="newFeatures"
+                           {{if .subscriber.NewFeatures}}checked{{end}}>
+                    <label for="newFeatures" class="checkbox-label">
+                        <div class="category-title">New Features</div>
+                        <div class="category-description">Announcements about new features and product updates</div>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="news" name="news"
+                           {{if .subscriber.News}}checked{{end}}>
+                    <label for="news" class="checkbox-label">
+                        <div class="category-title">News & Updates</div>
+                        <div class="category-description">Company news and general updates</div>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="other" name="other"
+                           {{if .subscriber.Others}}checked{{end}}>
+                    <label for="other" class="checkbox-label">
+                        <div class="category-title">Other Updates</div>
+                        <div class="category-description">Miscellaneous updates and announcements</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Save Preferences</button>
+            </div>
+        </form>
+
+        <div class="unsubscribe-section">
+            <p class="unsubscribe-text">Don't want to receive any emails?</p>
+            <button type="button" class="btn btn-danger" onclick="unsubscribeAll()">
+                Unsubscribe from All Emails
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; {{.Year}} <a href="https://github.com/rasadov">rasadov</a> Application</p>
+    </footer>
+
+    <script>
+        function showAlert(message, type) {
+            const alertsContainer = document.getElementById('alerts');
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            alertsContainer.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            alertsContainer.querySelector('.alert').style.display = 'block';
+
+            setTimeout(() => {
+                const alert = alertsContainer.querySelector('.alert');
+                if (alert) {
+                    alert.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        function setLoading(button, loading) {
+            if (loading) {
+                button.disabled = true;
+                button.textContent = 'Saving...';
+            } else {
+                button.disabled = false;
+                button.textContent = 'Save Preferences';
+            }
+        }
+
+        // Preferences form
+        document.getElementById('preferencesForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitButton = this.querySelector('button[type="submit"]');
+            setLoading(submitButton, true);
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('/preferences/update', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showAlert('Your preferences have been saved successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'Failed to save preferences', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error occurred. Please try again.', 'error');
+            } finally {
+                setLoading(submitButton, false);
+            }
+        });
+
+        // Unsubscribe function
+        async function unsubscribeAll() {
+            if (!confirm('Are you sure you want to unsubscribe from all emails? You can always resubscribe later.')) {
+                return;
+            }
+
+            const uuid = document.querySelector('input[name="uuid"]').value;
+
+            try {
+                const response = await fetch('/unsubscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `uuid=${encodeURIComponent(uuid)}`
+                });
+
+                if (response.ok) {
+                    showAlert('You have been successfully unsubscribed from all emails.', 'success');
+
+                    // Disable all checkboxes and buttons
+                    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                        cb.checked = false;
+                        cb.disabled = true;
+                    });
+                    document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 3000);
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'Failed to unsubscribe', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error occurred. Please try again.', 'error');
+            }
+        }
+
+        // Auto-save on checkbox change (optional feature)
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Optional: Show a small indicator that changes are unsaved
+                const submitButton = document.querySelector('button[type="submit"]');
+                submitButton.style.backgroundColor = '#ffc107';
+                submitButton.textContent = 'Save Changes';
+
+                setTimeout(() => {
+                    submitButton.style.backgroundColor = '#007bff';
+                    submitButton.textContent = 'Save Preferences';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

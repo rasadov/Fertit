@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"github.com/rasadov/MailManagerApp/pkg/utils"
+	"log"
 	"net/smtp"
 	"strconv"
 	"sync"
@@ -62,7 +63,8 @@ func (s *SMTPEmailService) SendNewsletter(subscribers []utils.SubscriberEmail, s
 	subscribersLength := len(subscribers)
 
 	if subscribersLength == 0 {
-		return fmt.Errorf("no subscribers provided")
+		log.Println("No subscribers available")
+		return nil
 	}
 
 	jobChan := make(chan utils.NewsletterJob, subscribersLength)

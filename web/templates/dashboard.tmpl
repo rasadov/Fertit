@@ -98,9 +98,11 @@
             <thead>
                 <tr>
                     <th>Email</th>
-                    <th>Name</th>
-                    <th>Categories</th>
-                    <th>Status</th>
+                    <th>Policy Updates</th>
+                    <th>Incidents</th>
+                    <th>New Features</th>
+                    <th>News</th>
+                    <th>Others</th>
                     <th>Joined</th>
                 </tr>
             </thead>
@@ -108,10 +110,12 @@
                 {{range .Subscribers}}
                 <tr>
                     <td>{{.Email}}</td>
-                    <td>{{if .Name}}{{.Name}}{{else}}-{{end}}</td>
-                    <td>{{if .Categories}}{{.Categories}}{{else}}General{{end}}</td>
-                    <td>{{if .IsActive}}Active{{else}}Inactive{{end}}</td>
-                    <td>{{if .CreatedAt}}{{.CreatedAt.Format "Jan 02, 2006"}}{{else}}-{{end}}</td>
+                    <td>{{.PolicyUpdates}}</td>
+                    <td>{{.Incidents}}</td>
+                    <td>{{.NewFeatures}}</td>
+                    <td>{{.News}}</td>
+                    <td>{{.Others}}</td>
+                    <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
                 </tr>
                 {{end}}
             </tbody>

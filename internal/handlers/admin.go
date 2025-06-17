@@ -157,6 +157,7 @@ func (h *AdminHandler) SendEmail(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to send email",
 		})
+		return
 	}
 
 	c.HTML(http.StatusOK, "success.tmpl", gin.H{})
