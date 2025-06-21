@@ -48,7 +48,7 @@ func main() {
 	staticHandler := handlers.NewStaticHandler("./web/static")
 
 	// Setup routes
-	r := setupRoutes(adminHandler, subscriberHandler, staticHandler, rateLimiter, authService)
+	r := setupRoutes(adminHandler, subscriberHandler, staticHandler, rateLimiter)
 
 	log.Fatal(r.Run(":8080"))
 }
@@ -58,7 +58,6 @@ func setupRoutes(
 	subscriberHandler *handlers.SubscriberHandler,
 	staticHandler *handlers.StaticHandler,
 	rateLimiter services.RateLimiter,
-	authService services.AuthService,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -102,7 +101,7 @@ func setupRoutes(
 
 	// Protected admin routes
 	admin := r.Group("/admin")
-	admin.Use(middleware.AuthRequired(authService))
+	admin.Use(middleware.AuthRequired())
 	{
 		admin.GET("", adminHandler.AdminDashboard)
 		admin.POST("/send-email", adminHandler.SendEmail)

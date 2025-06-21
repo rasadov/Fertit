@@ -35,6 +35,7 @@ services:
     restart: unless-stopped
 
   redis:
+    container_name: "mailing_redis"
     image: redis:7-alpine
     networks:
       - app-network

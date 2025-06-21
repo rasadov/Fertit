@@ -5,6 +5,7 @@ import (
 	"github.com/rasadov/MailManagerApp/internal/config"
 	"github.com/rasadov/MailManagerApp/internal/services"
 	customErrors "github.com/rasadov/MailManagerApp/pkg/errors"
+	"github.com/rasadov/MailManagerApp/pkg/utils"
 	"log"
 	"net/http"
 	"strconv"
@@ -66,7 +67,7 @@ func (h *AdminHandler) LoginPost(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.GenerateToken(username)
+	token, err := utils.GenerateToken(username)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
