@@ -4,156 +4,574 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 i {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-control:hover {
+            border-color: #667eea;
+            background: white;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .controls select {
+            padding: 8px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        thead th {
+            color: white;
+            font-weight: 600;
+            padding: 16px 12px;
+            text-align: left;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tbody tr:hover {
+            background: #e3f2fd;
+        }
+
+        tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .pagination a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination .current-page {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 2rem;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .small-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .table-container {
+                font-size: 0.875rem;
+            }
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
-    <p>Manage your email campaigns and subscribers</p>
-
-    <div id="alerts"></div>
-
-    <!-- Send Email Section -->
-    <div>
-        <h2>Send Newsletter</h2>
-        <form id="emailForm" method="POST" action="/admin/send-email">
-            <div>
-                <label for="category">Category:</label>
-                <select id="category" name="category" required>
-                    <option value="">Select category...</option>
-                    <option value="all">All Subscribers</option>
-                    <option value="policy_updates">Policy Updates</option>
-                    <option value="incident">Incident</option>
-                    <option value="new_features">New Features</option>
-                    <option value="news">News</option>
-                    <option value="others">Updates</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="subject">Subject:</label>
-                <input type="text" id="subject" name="subject" required>
-            </div>
-
-            <div>
-                <label for="body">Message:</label>
-                <textarea id="body" name="body" rows="5" required></textarea>
-            </div>
-
-            <div>
-                <input type="checkbox" id="html" name="html" value="1">
-                <label for="html">Send as HTML</label>
-            </div>
-
-            <button type="submit">Send Newsletter</button>
-        </form>
-    </div>
-
-    <hr>
-
-    <!-- Add Subscriber Section -->
-    <div>
-        <h2>Add New Subscriber</h2>
-        <form id="userForm">
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-
-            <div>
-                <label for="name">Name (Optional):</label>
-                <input type="text" id="name" name="name">
-            </div>
-
-            <div>
-                <label for="userCategory">Categories:</label>
-                <select id="userCategory" name="categories" multiple>
-                    <option value="general">General</option>
-                    <option value="news">News</option>
-                    <option value="updates">Updates</option>
-                    <option value="promotions">Promotions</option>
-                </select>
-                <small>Hold Ctrl/Cmd to select multiple</small>
-            </div>
-
-            <button type="submit">Add Subscriber</button>
-        </form>
-    </div>
-
-    <hr>
-
-    <!-- Subscribers List -->
-    <div>
-        <h2>Subscribers</h2>
-
-        <div>
-            <select id="elementsPerPage">
-                <option value="10" {{if eq .Elements 10}}selected{{end}}>10 per page</option>
-                <option value="25" {{if eq .Elements 25}}selected{{end}}>25 per page</option>
-                <option value="50" {{if eq .Elements 50}}selected{{end}}>50 per page</option>
-            </select>
-            <button onclick="location.reload()">Refresh</button>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <p>Manage your email campaigns and subscribers with ease</p>
         </div>
 
-        {{if .Subscribers}}
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Policy Updates</th>
-                    <th>Incidents</th>
-                    <th>New Features</th>
-                    <th>News</th>
-                    <th>Others</th>
-                    <th>Joined</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{range .Subscribers}}
-                <tr>
-                    <td>{{.Email}}</td>
-                    <td>{{.PolicyUpdates}}</td>
-                    <td>{{.Incidents}}</td>
-                    <td>{{.NewFeatures}}</td>
-                    <td>{{.News}}</td>
-                    <td>{{.Others}}</td>
-                    <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
-                </tr>
+        <div id="alerts"></div>
+
+        <div class="grid">
+            <!-- Send Email Section -->
+            <div class="card">
+                <h2><i class="fas fa-paper-plane"></i> Send Newsletter</h2>
+                <form id="emailForm" method="POST" action="/admin/send-email">
+                    <div class="form-group">
+                        <label for="category"><i class="fas fa-tags"></i> Category:</label>
+                        <select id="category" name="category" class="form-control" required>
+                            <option value="">Select category...</option>
+                            <option value="all">All Subscribers</option>
+                            <option value="policy_updates">Policy Updates</option>
+                            <option value="incident">Incident</option>
+                            <option value="new_features">New Features</option>
+                            <option value="news">News</option>
+                            <option value="others">Updates</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject"><i class="fas fa-heading"></i> Subject:</label>
+                        <input type="text" id="subject" name="subject" class="form-control" placeholder="Enter email subject..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="body"><i class="fas fa-edit"></i> Message:</label>
+                        <textarea id="body" name="body" class="form-control" placeholder="Write your newsletter content here..." required></textarea>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="html" name="html" value="1">
+                        <label for="html">Send as HTML</label>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Newsletter
+                    </button>
+                </form>
+            </div>
+
+            <!-- Add Subscriber Section -->
+            <div class="card">
+                <h2><i class="fas fa-user-plus"></i> Add New Subscriber</h2>
+                <form id="userForm">
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email:</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="subscriber@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> Name (Optional):</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="Subscriber's name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userCategory"><i class="fas fa-list"></i> Categories:</label>
+                        <select id="userCategory" name="categories" class="form-control" multiple>
+                            <option value="general">General</option>
+                            <option value="news">News</option>
+                            <option value="updates">Updates</option>
+                            <option value="promotions">Promotions</option>
+                        </select>
+                        <div class="small-text">Hold Ctrl/Cmd to select multiple categories</div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-user-plus"></i>
+                        Add Subscriber
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Subscribers List -->
+        <div class="card">
+            <h2><i class="fas fa-users"></i> Subscribers Management</h2>
+
+            <div class="controls">
+                <select id="elementsPerPage" class="form-control" style="width: auto;">
+                    <option value="10" {{if eq .Elements 10}}selected{{end}}>10 per page</option>
+                    <option value="25" {{if eq .Elements 25}}selected{{end}}>25 per page</option>
+                    <option value="50" {{if eq .Elements 50}}selected{{end}}>50 per page</option>
+                </select>
+                <button class="btn btn-secondary" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+            </div>
+
+            {{if .Subscribers}}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-envelope"></i> Email</th>
+                            <th><i class="fas fa-shield-alt"></i> Policy Updates</th>
+                            <th><i class="fas fa-exclamation-triangle"></i> Incidents</th>
+                            <th><i class="fas fa-star"></i> New Features</th>
+                            <th><i class="fas fa-newspaper"></i> News</th>
+                            <th><i class="fas fa-info-circle"></i> Others</th>
+                            <th><i class="fas fa-calendar"></i> Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Subscribers}}
+                        <tr>
+                            <td><strong>{{.Email}}</strong></td>
+                            <td>
+                                <span class="status-badge {{if .PolicyUpdates}}status-active{{else}}status-inactive{{end}}">
+                                    {{if .PolicyUpdates}}✓{{else}}✗{{end}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{if .Incidents}}status-active{{else}}status-inactive{{end}}">
+                                    {{if .Incidents}}✓{{else}}✗{{end}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{if .NewFeatures}}status-active{{else}}status-inactive{{end}}">
+                                    {{if .NewFeatures}}✓{{else}}✗{{end}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{if .News}}status-active{{else}}status-inactive{{end}}">
+                                    {{if .News}}✓{{else}}✗{{end}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{if .Others}}status-active{{else}}status-inactive{{end}}">
+                                    {{if .Others}}✓{{else}}✗{{end}}
+                                </span>
+                            </td>
+                            <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                {{if gt .Page 1}}
+                    <a href="?page={{sub .Page 1}}&elements={{.Elements}}">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
                 {{end}}
-            </tbody>
-        </table>
 
-        <div>
-            {{if gt .Page 1}}
-                <a href="?page={{sub .Page 1}}&elements={{.Elements}}">Previous</a>
+                <span class="current-page">Page {{.Page}}</span>
+
+                <a href="?page={{add .Page 1}}&elements={{.Elements}}">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+            {{else}}
+            <div style="text-align: center; padding: 2rem; color: #6c757d;">
+                <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                <p style="font-size: 1.1rem;">No subscribers found.</p>
+                <p>Start building your subscriber base by adding your first subscriber above!</p>
+            </div>
             {{end}}
-
-            Page {{.Page}}
-
-            <a href="?page={{add .Page 1}}&elements={{.Elements}}">Next</a>
         </div>
-        {{else}}
-        <p>No subscribers found.</p>
-        {{end}}
-    </div>
 
-    <footer>
-        <p>&copy; {{.Year}} <a href="https://github.com/rasadov">rasadov</a> Application</p>
-    </footer>
+        <div class="footer">
+            <p>&copy; {{.Year}} <a href="https://github.com/rasadov">rasadov</a> - Email Campaign Management System</p>
+        </div>
+    </div>
 
     <script>
         function showAlert(message, type) {
             const alertsContainer = document.getElementById('alerts');
-            alertsContainer.innerHTML = '<div style="color: ' + (type === 'error' ? 'red' : 'green') + '">' + message + '</div>';
-            setTimeout(() => { alertsContainer.innerHTML = ''; }, 5000);
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+
+            alertsContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="${icon}"></i>
+                    ${message}
+                </div>
+            `;
+
+            setTimeout(() => {
+                alertsContainer.innerHTML = '';
+            }, 5000);
         }
 
         function setLoading(form, loading) {
             const button = form.querySelector('button[type="submit"]');
             if (loading) {
                 button.disabled = true;
-                button.textContent = 'Processing...';
+                button.innerHTML = `<span class="spinner"></span> Processing...`;
+                form.classList.add('loading');
             } else {
                 button.disabled = false;
-                button.textContent = form.id === 'emailForm' ? 'Send Newsletter' : 'Add Subscriber';
+                const originalText = form.id === 'emailForm' ?
+                    '<i class="fas fa-paper-plane"></i> Send Newsletter' :
+                    '<i class="fas fa-user-plus"></i> Add Subscriber';
+                button.innerHTML = originalText;
+                form.classList.remove('loading');
             }
         }
 
@@ -171,14 +589,14 @@
                 });
 
                 if (response.ok) {
-                    showAlert('Newsletter sent successfully!', 'success');
+                    showAlert('Newsletter sent successfully! 🎉', 'success');
                     this.reset();
                 } else {
                     const error = await response.json();
                     showAlert(error.error || 'Failed to send newsletter', 'error');
                 }
             } catch (error) {
-                showAlert('Network error occurred', 'error');
+                showAlert('Network error occurred. Please try again.', 'error');
             } finally {
                 setLoading(this, false);
             }
@@ -208,7 +626,7 @@
                 });
 
                 if (response.ok) {
-                    showAlert('Subscriber added successfully!', 'success');
+                    showAlert('Subscriber added successfully! 🎉', 'success');
                     this.reset();
                     setTimeout(() => { location.reload(); }, 2000);
                 } else {
@@ -216,7 +634,7 @@
                     showAlert(error.error || 'Failed to add subscriber', 'error');
                 }
             } catch (error) {
-                showAlert('Network error occurred', 'error');
+                showAlert('Network error occurred. Please try again.', 'error');
             } finally {
                 setLoading(this, false);
             }
@@ -229,6 +647,16 @@
             url.searchParams.set('elements', elements);
             url.searchParams.set('page', '1');
             window.location.href = url.toString();
+        });
+
+        // Add smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
         });
     </script>
 </body>

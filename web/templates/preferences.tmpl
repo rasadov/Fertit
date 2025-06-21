@@ -4,144 +4,477 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Email Preferences</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 20px 10px;
         }
+
         .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 650px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(31, 38, 135, 0.37);
+            position: relative;
+            overflow: hidden;
         }
-        h1 {
-            color: #333;
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .header {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 2rem;
         }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .email-info {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .checkbox-group {
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
             display: flex;
             align-items: center;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            transition: background-color 0.2s;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
         }
+
+        .header-icon i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .email-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid #e1e5e9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .email-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .email-info i {
+            color: #667eea;
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .email-info strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group {
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .checkbox-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
         .checkbox-group:hover {
-            background-color: #f8f9fa;
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
         }
-        .checkbox-group input[type="checkbox"] {
-            margin-right: 12px;
-            transform: scale(1.2);
+
+        .checkbox-group:hover::before {
+            left: 100%;
         }
+
+        .checkbox-group.checked {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox input:checked ~ .checkmark {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .checkmark::after {
+            content: '';
+            position: absolute;
+            display: none;
+            left: 7px;
+            top: 3px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark::after {
+            display: block;
+            animation: checkmark-appear 0.3s ease;
+        }
+
+        @keyframes checkmark-appear {
+            0% { opacity: 0; transform: rotate(45deg) scale(0); }
+            100% { opacity: 1; transform: rotate(45deg) scale(1); }
+        }
+
         .checkbox-label {
             flex: 1;
         }
+
         .category-title {
-            font-weight: bold;
+            font-weight: 600;
             color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .category-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+        }
+
         .category-description {
-            font-size: 0.9em;
             color: #666;
-            margin-top: 4px;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
+
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 30px;
+            gap: 1rem;
+            margin-top: 2rem;
         }
+
         .btn {
             flex: 1;
-            padding: 12px 20px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
         .btn-primary {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
+
         .btn-primary:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
+
         .btn-danger {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
         }
+
         .btn-danger:hover {
-            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
         }
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn:disabled::before {
             display: none;
         }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
         .alert-success {
-            background-color: #d4edda;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.05) 100%);
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border: 2px solid rgba(40, 167, 69, 0.2);
         }
+
         .alert-error {
-            background-color: #f8d7da;
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.05) 100%);
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border: 2px solid rgba(220, 53, 69, 0.2);
         }
-        footer {
+
+        .unsubscribe-section {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e1e5e9;
             text-align: center;
-            margin-top: 40px;
+        }
+
+        .unsubscribe-text {
             color: #666;
-            font-size: 0.9em;
+            margin-bottom: 1rem;
+            font-size: 1rem;
         }
-        footer a {
-            color: #007bff;
+
+        .footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .footer a {
+            color: white;
             text-decoration: none;
+            font-weight: 500;
         }
-        footer a:hover {
+
+        .footer a:hover {
             text-decoration: underline;
         }
-        .unsubscribe-section {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
+
+        .loading {
+            opacity: 0.8;
         }
-        .unsubscribe-text {
-            text-align: center;
-            color: #666;
-            margin-bottom: 15px;
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .change-indicator {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            background: #ffc107;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+                margin: 10px;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .checkbox-group {
+                padding: 1.25rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 14px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .checkbox-wrapper {
+                gap: 0.75rem;
+            }
+
+            .category-title {
+                font-size: 1rem;
+            }
+        }
+
+        /* Success animation */
+        @keyframes success-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .success-animation {
+            animation: success-pulse 0.6s ease-in-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Manage Email Preferences</h1>
-        <p class="subtitle">Choose which types of emails you'd like to receive</p>
+        <div class="header">
+            <div class="header-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <h1>Email Preferences</h1>
+            <p class="subtitle">Customize your email experience</p>
+        </div>
 
         <div class="email-info">
-            <strong>Email:</strong> {{.subscriber.Email}}
+            <i class="fas fa-envelope"></i>
+            <strong>Your Email:</strong> {{.subscriber.Email}}
         </div>
 
         <div id="alerts"></div>
@@ -150,78 +483,143 @@
             <input type="hidden" name="uuid" value="{{.subscriber.Uuid}}">
 
             <div class="form-group">
-                <div class="checkbox-group">
-                    <input type="checkbox" id="policyUpdates" name="policyUpdates"
-                           {{if .subscriber.PolicyUpdates}}checked{{end}}>
-                    <label for="policyUpdates" class="checkbox-label">
-                        <div class="category-title">Policy Updates</div>
-                        <div class="category-description">Important updates about our policies and terms of service</div>
-                    </label>
+                <div class="checkbox-group {{if .subscriber.PolicyUpdates}}checked{{end}}" data-category="policy">
+                    <div class="checkbox-wrapper">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="policyUpdates" name="policyUpdates"
+                                   {{if .subscriber.PolicyUpdates}}checked{{end}}>
+                            <span class="checkmark"></span>
+                        </div>
+                        <label for="policyUpdates" class="checkbox-label">
+                            <div class="category-title">
+                                <div class="category-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                Policy Updates
+                            </div>
+                            <div class="category-description">Important updates about our policies and terms of service</div>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="incident" name="incident"
-                           {{if .subscriber.Incidents}}checked{{end}}>
-                    <label for="incident" class="checkbox-label">
-                        <div class="category-title">Incident Notifications</div>
-                        <div class="category-description">Critical alerts about service outages and incidents</div>
-                    </label>
+                <div class="checkbox-group {{if .subscriber.Incidents}}checked{{end}}" data-category="incident">
+                    <div class="checkbox-wrapper">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="incident" name="incident"
+                                   {{if .subscriber.Incidents}}checked{{end}}>
+                            <span class="checkmark"></span>
+                        </div>
+                        <label for="incident" class="checkbox-label">
+                            <div class="category-title">
+                                <div class="category-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                Incident Notifications
+                            </div>
+                            <div class="category-description">Critical alerts about service outages and incidents</div>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="newFeatures" name="newFeatures"
-                           {{if .subscriber.NewFeatures}}checked{{end}}>
-                    <label for="newFeatures" class="checkbox-label">
-                        <div class="category-title">New Features</div>
-                        <div class="category-description">Announcements about new features and product updates</div>
-                    </label>
+                <div class="checkbox-group {{if .subscriber.NewFeatures}}checked{{end}}" data-category="features">
+                    <div class="checkbox-wrapper">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="newFeatures" name="newFeatures"
+                                   {{if .subscriber.NewFeatures}}checked{{end}}>
+                            <span class="checkmark"></span>
+                        </div>
+                        <label for="newFeatures" class="checkbox-label">
+                            <div class="category-title">
+                                <div class="category-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                New Features
+                            </div>
+                            <div class="category-description">Announcements about new features and product updates</div>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="news" name="news"
-                           {{if .subscriber.News}}checked{{end}}>
-                    <label for="news" class="checkbox-label">
-                        <div class="category-title">News & Updates</div>
-                        <div class="category-description">Company news and general updates</div>
-                    </label>
+                <div class="checkbox-group {{if .subscriber.News}}checked{{end}}" data-category="news">
+                    <div class="checkbox-wrapper">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="news" name="news"
+                                   {{if .subscriber.News}}checked{{end}}>
+                            <span class="checkmark"></span>
+                        </div>
+                        <label for="news" class="checkbox-label">
+                            <div class="category-title">
+                                <div class="category-icon">
+                                    <i class="fas fa-newspaper"></i>
+                                </div>
+                                News & Updates
+                            </div>
+                            <div class="category-description">Company news and general updates</div>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="other" name="other"
-                           {{if .subscriber.Others}}checked{{end}}>
-                    <label for="other" class="checkbox-label">
-                        <div class="category-title">Other Updates</div>
-                        <div class="category-description">Miscellaneous updates and announcements</div>
-                    </label>
+                <div class="checkbox-group {{if .subscriber.Others}}checked{{end}}" data-category="other">
+                    <div class="checkbox-wrapper">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="other" name="other"
+                                   {{if .subscriber.Others}}checked{{end}}>
+                            <span class="checkmark"></span>
+                        </div>
+                        <label for="other" class="checkbox-label">
+                            <div class="category-title">
+                                <div class="category-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                Other Updates
+                            </div>
+                            <div class="category-description">Miscellaneous updates and announcements</div>
+                        </label>
+                    </div>
                 </div>
             </div>
 
             <div class="button-group">
-                <button type="submit" class="btn btn-primary">Save Preferences</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Preferences
+                </button>
             </div>
         </form>
 
         <div class="unsubscribe-section">
-            <p class="unsubscribe-text">Don't want to receive any emails?</p>
+            <p class="unsubscribe-text">
+                <i class="fas fa-times-circle"></i>
+                Don't want to receive any emails?
+            </p>
             <button type="button" class="btn btn-danger" onclick="unsubscribeAll()">
+                <i class="fas fa-sign-out-alt"></i>
                 Unsubscribe from All Emails
             </button>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; {{.Year}} <a href="https://github.com/rasadov">rasadov</a> Application</p>
-    </footer>
+    <div class="footer">
+        <p>&copy; {{.Year}} <a href="https://github.com/rasadov">rasadov</a> - Email Preference Center</p>
+    </div>
 
     <script>
         function showAlert(message, type) {
             const alertsContainer = document.getElementById('alerts');
             const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
-            alertsContainer.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
-            alertsContainer.querySelector('.alert').style.display = 'block';
+            const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+
+            alertsContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="${icon}"></i>
+                    ${message}
+                </div>
+            `;
+
+            const alert = alertsContainer.querySelector('.alert');
+            alert.style.display = 'flex';
 
             setTimeout(() => {
-                const alert = alertsContainer.querySelector('.alert');
                 if (alert) {
                     alert.style.display = 'none';
                 }
@@ -231,11 +629,25 @@
         function setLoading(button, loading) {
             if (loading) {
                 button.disabled = true;
-                button.textContent = 'Saving...';
+                button.innerHTML = '<span class="spinner"></span> Saving...';
+                button.closest('form').classList.add('loading');
             } else {
                 button.disabled = false;
-                button.textContent = 'Save Preferences';
+                button.innerHTML = '<i class="fas fa-save"></i> Save Preferences';
+                button.closest('form').classList.remove('loading');
             }
+        }
+
+        // Update checkbox group styling based on checked state
+        function updateCheckboxGroupStyling() {
+            document.querySelectorAll('.checkbox-group').forEach(group => {
+                const checkbox = group.querySelector('input[type="checkbox"]');
+                if (checkbox.checked) {
+                    group.classList.add('checked');
+                } else {
+                    group.classList.remove('checked');
+                }
+            });
         }
 
         // Preferences form
@@ -253,7 +665,18 @@
                 });
 
                 if (response.ok) {
-                    showAlert('Your preferences have been saved successfully!', 'success');
+                    showAlert('Your preferences have been saved successfully! 🎉', 'success');
+
+                    // Add success animation to container
+                    document.querySelector('.container').classList.add('success-animation');
+                    setTimeout(() => {
+                        document.querySelector('.container').classList.remove('success-animation');
+                    }, 600);
+
+                    // Remove change indicators
+                    document.querySelectorAll('.change-indicator').forEach(indicator => {
+                        indicator.remove();
+                    });
                 } else {
                     const error = await response.json();
                     showAlert(error.message || 'Failed to save preferences', 'error');
@@ -272,6 +695,10 @@
             }
 
             const uuid = document.querySelector('input[name="uuid"]').value;
+            const button = event.target;
+
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner"></span> Unsubscribing...';
 
             try {
                 const response = await fetch('/unsubscribe', {
@@ -283,13 +710,18 @@
                 });
 
                 if (response.ok) {
-                    showAlert('You have been successfully unsubscribed from all emails.', 'success');
+                    showAlert('You have been successfully unsubscribed from all emails. 👋', 'success');
 
-                    // Disable all checkboxes and buttons
-                    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                        cb.checked = false;
-                        cb.disabled = true;
+                    // Disable all checkboxes and buttons with animation
+                    document.querySelectorAll('input[type="checkbox"]').forEach((cb, index) => {
+                        setTimeout(() => {
+                            cb.checked = false;
+                            cb.disabled = true;
+                            cb.closest('.checkbox-group').style.opacity = '0.5';
+                            cb.closest('.checkbox-group').style.transform = 'scale(0.95)';
+                        }, index * 100);
                     });
+
                     document.querySelectorAll('button').forEach(btn => btn.disabled = true);
 
                     setTimeout(() => {
@@ -298,24 +730,66 @@
                 } else {
                     const error = await response.json();
                     showAlert(error.message || 'Failed to unsubscribe', 'error');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-sign-out-alt"></i> Unsubscribe from All Emails';
                 }
             } catch (error) {
                 showAlert('Network error occurred. Please try again.', 'error');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-sign-out-alt"></i> Unsubscribe from All Emails';
             }
         }
 
-        // Auto-save on checkbox change (optional feature)
+        // Auto-save indicator on checkbox change
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
-                // Optional: Show a small indicator that changes are unsaved
+                updateCheckboxGroupStyling();
+
+                // Show change indicator
                 const submitButton = document.querySelector('button[type="submit"]');
-                submitButton.style.backgroundColor = '#ffc107';
-                submitButton.textContent = 'Save Changes';
+                if (!document.querySelector('.change-indicator')) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'change-indicator';
+                    submitButton.appendChild(indicator);
+                }
+
+                submitButton.style.background = 'linear-gradient(135deg, #ffc107 0%, #ff8c00 100%)';
+                submitButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Save Changes';
 
                 setTimeout(() => {
-                    submitButton.style.backgroundColor = '#007bff';
-                    submitButton.textContent = 'Save Preferences';
-                }, 2000);
+                    submitButton.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    submitButton.innerHTML = '<i class="fas fa-save"></i> Save Preferences';
+                }, 3000);
+            });
+        });
+
+        // Make entire checkbox group clickable
+        document.querySelectorAll('.checkbox-group').forEach(group => {
+            group.addEventListener('click', function(e) {
+                if (e.target.type !== 'checkbox') {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    if (!checkbox.disabled) {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+        });
+
+        // Initialize styling
+        updateCheckboxGroupStyling();
+
+        // Add smooth transitions on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.checkbox-group').forEach((group, index) => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    group.style.transition = 'all 0.5s ease';
+                    group.style.opacity = '1';
+                    group.style.transform = 'translateY(0)';
+                }, index * 100);
             });
         });
     </script>
