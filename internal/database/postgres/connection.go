@@ -1,14 +1,13 @@
 package postgres
 
 import (
-	"github.com/rasadov/MailManagerApp/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
 )
 
-func InitDB() *gorm.DB {
-	db, err := gorm.Open(postgres.Open(config.AppConfig.PostgresUrl))
+func GetPostgresDB(PostgresUrl string) *gorm.DB {
+	db, err := gorm.Open(postgres.Open(PostgresUrl))
 
 	if err != nil {
 		log.Fatal("Failed to connect to DB:", err)
@@ -23,7 +22,7 @@ func InitDB() *gorm.DB {
 	err = sqlDB.Ping()
 
 	if err != nil {
-		log.Fatal("Failed to connect to DB:", err)
+		log.Fatal("Failed to ping:", err)
 	}
 
 	return db

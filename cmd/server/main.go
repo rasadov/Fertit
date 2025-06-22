@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/gin-gonic/gin"
 	"github.com/rasadov/MailManagerApp/internal/config"
 	"github.com/rasadov/MailManagerApp/internal/database/postgres"
 	"github.com/rasadov/MailManagerApp/internal/database/redis"
@@ -11,8 +12,6 @@ import (
 	"html/template"
 	"log"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -20,11 +19,11 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	db := postgres.InitDB()
-	redis.InitRedis(ctx)
+	db := postgres.GetPostgresDB(config.AppConfig.PostgresUrl)
+	client := redis.GetRedisClient(ctx, config.AppConfig.RedisAddr, config.AppConfig.RedisPassword)
 
 	// Initialize services
-	rateLimiter := services.NewRateLimiter(redis.Client, 3, 15*time.Minute)
+	rateLimiter := services.NewRateLimiter(client, 3, 15*time.Minute)
 	authService := services.NewJWTAuthService(config.AppConfig.JWTSecret, config.AppConfig.JWTIssuer, db)
 	emailService := services.NewSMTPEmailService(
 		config.AppConfig.SmtpHost,
