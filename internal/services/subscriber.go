@@ -10,9 +10,9 @@ import (
 )
 
 type SubscriberService interface {
-	GetSubscriber(uuid string) (models.Subscriber, error)
-	GetSubscribers(page, elements int) ([]models.Subscriber, error)
-	GetSubscribersByCategory(category string) ([]utils.SubscriberEmail, error)
+	GetSubscriber(uuid string) (*models.Subscriber, error)
+	GetSubscribers(page, elements int) ([]*models.Subscriber, int64, error)
+	GetSubscribersByCategory(category string) ([]*utils.SubscriberEmail, int64, error)
 	Subscribe(email string) error
 	Update(uuid string, policyUpdates, incidents, newFeatures, news, other bool) error
 }
@@ -28,36 +28,42 @@ func NewSubscriberService(db *gorm.DB) SubscriberService {
 	}
 }
 
-func (s *subscriberService) GetSubscriber(uuid string) (models.Subscriber, error) {
-	res, err := s.repo.GetSubscriber(uuid)
-	if err != nil {
-		return models.Subscriber{}, err
+func (s *subscriberService) GetSubscriber(uuid string) (*models.Subscriber, error) {
+	user := &models.Subscriber{
+		Uuid: uuid,
 	}
-	return res, nil
-}
-
-func (s *subscriberService) GetSubscribers(page, elements int) ([]models.Subscriber, error) {
-	res, err := s.repo.ListSubscribers((page-1)*elements, elements)
-	if err != nil {
-		return []models.Subscriber{}, err
-	}
-	return res, nil
-}
-
-func (s *subscriberService) GetSubscribersByCategory(category string) ([]utils.SubscriberEmail, error) {
-	emails, err := s.repo.ListCategorySubscriberEmails(category)
+	err := s.repo.GetSubscriber(user)
 	if err != nil {
 		return nil, err
 	}
-	return emails, nil
+	return user, nil
+}
+
+func (s *subscriberService) GetSubscribers(page, elements int) ([]*models.Subscriber, int64, error) {
+	users, total, err := s.repo.ListSubscribers((page-1)*elements, elements)
+	if err != nil {
+		return nil, 0, err
+	}
+	return users, total, nil
+}
+
+func (s *subscriberService) GetSubscribersByCategory(category string) ([]*utils.SubscriberEmail, int64, error) {
+	emails, total, err := s.repo.ListCategorySubscriberEmails(category)
+	if err != nil {
+		return nil, 0, err
+	}
+	return emails, total, nil
 }
 
 func (s *subscriberService) Subscribe(email string) error {
-	_, err := s.repo.GetSubscriberByEmail(email)
+	user := &models.Subscriber{
+		Email: email,
+	}
+	err := s.repo.GetSubscriber(user)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return customErrors.ErrAlreadySubscribed
 	}
-	err = s.repo.CreateSubscriber(models.Subscriber{
+	err = s.repo.CreateSubscriber(&models.Subscriber{
 		Email:         email,
 		PolicyUpdates: true,
 		Incidents:     true,
@@ -72,7 +78,10 @@ func (s *subscriberService) Subscribe(email string) error {
 }
 
 func (s *subscriberService) Update(uuid string, policyUpdates, incidents, newFeatures, news, other bool) error {
-	subscriber, err := s.repo.GetSubscriber(uuid)
+	subscriber := &models.Subscriber{
+		Uuid: uuid,
+	}
+	err := s.repo.GetSubscriber(subscriber)
 	if err != nil {
 		return err
 	}

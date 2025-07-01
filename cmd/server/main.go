@@ -19,23 +19,23 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	db := postgres.GetPostgresDB(config.AppConfig.PostgresUrl)
-	client := redis.GetRedisClient(ctx, config.AppConfig.RedisAddr, config.AppConfig.RedisPassword)
+	db := postgres.GetPostgresDB(config.PostgresUrl)
+	client := redis.GetRedisClient(ctx, config.RedisAddr, config.RedisPassword)
 
 	// Initialize services
 	rateLimiter := services.NewRateLimiter(client, 3, 15*time.Minute)
-	authService := services.NewJWTAuthService(config.AppConfig.JWTSecret, config.AppConfig.JWTIssuer, db)
+	authService := services.NewJWTAuthService(config.JWTSecret, config.JWTIssuer, db)
 	emailService := services.NewSMTPEmailService(
-		config.AppConfig.SmtpHost,
-		config.AppConfig.SmtpPort,
-		config.AppConfig.SmtpUsername,
-		config.AppConfig.SmtpPassword,
-		config.AppConfig.BaseUrl,
+		config.SmtpHost,
+		config.SmtpPort,
+		config.SmtpUsername,
+		config.SmtpPassword,
+		config.BaseUrl,
 	)
 	subscriberService := services.NewSubscriberService(db)
 
 	// Ensure admin user is present
-	err := authService.EnsureAdminUser(config.AppConfig.AdminUsername, config.AppConfig.AdminPassword)
+	err := authService.EnsureAdminUser(config.AdminUsername, config.AdminPassword)
 
 	if err != nil {
 		log.Println("Error ensuring admin user")

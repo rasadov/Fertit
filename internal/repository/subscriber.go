@@ -8,12 +8,11 @@ import (
 
 // SubscriberRepository - interface with repository level functions
 type SubscriberRepository interface {
-	GetSubscriber(uuid string) (models.Subscriber, error)
-	ListSubscribers(offset, limit int) ([]models.Subscriber, error)
-	ListCategorySubscriberEmails(category string) ([]utils.SubscriberEmail, error)
-	GetSubscriberByEmail(email string) (models.Subscriber, error)
-	UpdateSubscriber(subscriber models.Subscriber) error
-	CreateSubscriber(subscriber models.Subscriber) error
+	GetSubscriber(sub *models.Subscriber) error
+	ListSubscribers(offset, limit int) ([]*models.Subscriber, int64, error)
+	ListCategorySubscriberEmails(category string) ([]*utils.SubscriberEmail, int64, error)
+	UpdateSubscriber(sub *models.Subscriber) error
+	CreateSubscriber(sub *models.Subscriber) error
 }
 
 // subscriberRepository - implementation of the subscriberRepository with gorm
@@ -27,28 +26,18 @@ func NewSubscriberRepository(db *gorm.DB) SubscriberRepository {
 	}
 }
 
-func (r subscriberRepository) GetSubscriber(uuid string) (models.Subscriber, error) {
-	var sub models.Subscriber
-	res := r.db.First(&sub, "uuid = ?", uuid)
-
-	return sub, res.Error
+func (r subscriberRepository) GetSubscriber(sub *models.Subscriber) error {
+	return r.db.First(sub).Error
 }
 
-func (r subscriberRepository) GetSubscriberByEmail(email string) (models.Subscriber, error) {
-	var sub models.Subscriber
-	res := r.db.First(&sub, "email = ?", email)
-
-	return sub, res.Error
-}
-
-func (r subscriberRepository) ListSubscribers(offset, limit int) ([]models.Subscriber, error) {
-	var subs []models.Subscriber
+func (r subscriberRepository) ListSubscribers(offset, limit int) ([]*models.Subscriber, int64, error) {
+	var subs []*models.Subscriber
 	res := r.db.Offset(offset).Limit(limit).Find(&subs)
-	return subs, res.Error
+	return subs, res.RowsAffected, res.Error
 }
 
-func (r subscriberRepository) ListCategorySubscriberEmails(category string) ([]utils.SubscriberEmail, error) {
-	var subscribers []utils.SubscriberEmail
+func (r subscriberRepository) ListCategorySubscriberEmails(category string) ([]*utils.SubscriberEmail, int64, error) {
+	var subs []*utils.SubscriberEmail
 
 	query := r.db.Model(&models.Subscriber{}).
 		Select("email, uuid")
@@ -57,12 +46,12 @@ func (r subscriberRepository) ListCategorySubscriberEmails(category string) ([]u
 		query = query.Where(category+" = ?", true)
 	}
 
-	err := query.Find(&subscribers).Error
-	return subscribers, err
+	res := query.Find(subs)
+	return subs, res.RowsAffected, res.Error
 }
 
-func (r subscriberRepository) UpdateSubscriber(subscriber models.Subscriber) error {
-	res := r.db.Save(&subscriber)
+func (r subscriberRepository) UpdateSubscriber(subscriber *models.Subscriber) error {
+	res := r.db.Save(subscriber)
 
 	if res.Error != nil {
 		return res.Error
@@ -75,8 +64,8 @@ func (r subscriberRepository) UpdateSubscriber(subscriber models.Subscriber) err
 	return nil
 }
 
-func (r subscriberRepository) CreateSubscriber(subscriber models.Subscriber) error {
-	res := r.db.Create(&subscriber)
+func (r subscriberRepository) CreateSubscriber(subscriber *models.Subscriber) error {
+	res := r.db.Create(subscriber)
 
 	if res.Error != nil {
 		return res.Error

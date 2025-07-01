@@ -15,8 +15,8 @@ const (
 )
 
 type EmailService interface {
-	SendEmail(message utils.EmailMessage) error
-	SendNewsletter(subscribers []utils.SubscriberEmail, subject, body string, isHTML bool) error
+	SendEmail(message *utils.EmailMessage) error
+	SendNewsletter(subscribers []*utils.SubscriberEmail, subject, body string, isHTML bool) error
 }
 
 type SMTPEmailService struct {
@@ -44,7 +44,7 @@ func NewSMTPEmailService(
 }
 
 // SendEmail sends an email using SMTP
-func (s *SMTPEmailService) SendEmail(message utils.EmailMessage) error {
+func (s *SMTPEmailService) SendEmail(message *utils.EmailMessage) error {
 	auth := smtp.PlainAuth("", s.username, s.password, s.smtpHost)
 	emailBody := utils.BuildEmailBody(s.username, message)
 	recipients := utils.GetAllRecipients(message)
@@ -59,7 +59,7 @@ func (s *SMTPEmailService) SendEmail(message utils.EmailMessage) error {
 }
 
 // SendNewsletter sends newsletter to multiple subscribers with personalized unsubscribe links
-func (s *SMTPEmailService) SendNewsletter(subscribers []utils.SubscriberEmail, subject, body string, isHTML bool) error {
+func (s *SMTPEmailService) SendNewsletter(subscribers []*utils.SubscriberEmail, subject, body string, isHTML bool) error {
 	subscribersLength := len(subscribers)
 
 	if subscribersLength == 0 {
@@ -116,7 +116,7 @@ func (s *SMTPEmailService) newsletterWorker(jobs <-chan utils.NewsletterJob, wg 
 	defer wg.Done()
 
 	for job := range jobs {
-		message := utils.EmailMessage{
+		message := &utils.EmailMessage{
 			To:      []string{job.Recipient},
 			Subject: job.Subject,
 			Body:    job.Body,

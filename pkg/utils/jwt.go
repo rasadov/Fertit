@@ -17,7 +17,7 @@ func VerifyToken(encodedToken string) (*jwt.Token, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 			}
-			return []byte(config.AppConfig.JWTSecret), nil
+			return []byte(config.JWTSecret), nil
 		},
 	)
 	if err != nil {
@@ -27,7 +27,7 @@ func VerifyToken(encodedToken string) (*jwt.Token, error) {
 	}
 
 	if claims, ok := token.Claims.(*JWTCustomClaims); ok && token.Valid {
-		if claims.Issuer != config.AppConfig.JWTIssuer {
+		if claims.Issuer != config.JWTIssuer {
 			return nil, errors.New("invalid Issuer in token")
 		}
 		return token, nil
@@ -41,7 +41,7 @@ func GenerateToken(username string) (string, error) {
 	tokenData := &JWTCustomClaims{
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    config.AppConfig.JWTIssuer,
+			Issuer:    config.JWTIssuer,
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 		},
@@ -49,7 +49,7 @@ func GenerateToken(username string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenData)
 
-	tokenString, err := token.SignedString([]byte(config.AppConfig.JWTSecret))
+	tokenString, err := token.SignedString([]byte(config.JWTSecret))
 	if err != nil {
 		return "", err
 	}

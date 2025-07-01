@@ -6,8 +6,8 @@ import (
 )
 
 type UserRepository interface {
-	GetUser(username string) (models.User, error)
-	CreateUser(user models.User) error
+	GetUser(user *models.User) error
+	CreateUser(user *models.User) error
 }
 
 type userRepository struct {
@@ -20,16 +20,10 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-func (r *userRepository) GetUser(username string) (models.User, error) {
-	var admin models.User
-
-	err := r.db.First(&admin, "username = ?", username).Error
-	if err != nil {
-		return models.User{}, err
-	}
-	return admin, nil
+func (r *userRepository) GetUser(user *models.User) error {
+	return r.db.First(user).Error
 }
 
-func (r *userRepository) CreateUser(user models.User) error {
-	return r.db.Create(&user).Error
+func (r *userRepository) CreateUser(user *models.User) error {
+	return r.db.Create(user).Error
 }

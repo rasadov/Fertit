@@ -39,7 +39,7 @@ type EmailMessage struct {
 }
 
 // BuildEmailBody constructs the email body with proper headers
-func BuildEmailBody(from string, message EmailMessage) string {
+func BuildEmailBody(from string, message *EmailMessage) string {
 	var body strings.Builder
 
 	// Headers
@@ -72,7 +72,7 @@ func BuildEmailBody(from string, message EmailMessage) string {
 }
 
 // GetAllRecipients combines To, CC, and BCC recipients for SMTP envelope
-func GetAllRecipients(message EmailMessage) []string {
+func GetAllRecipients(message *EmailMessage) []string {
 	var recipients []string
 	recipients = append(recipients, message.To...)
 	recipients = append(recipients, message.CC...)

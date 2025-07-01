@@ -9,8 +9,8 @@ import (
 
 func GetRedisClient(ctx context.Context, redisAddr, redisPassword string) *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     config.AppConfig.RedisAddr,
-		Password: config.AppConfig.RedisPassword,
+		Addr:     config.RedisAddr,
+		Password: config.RedisPassword,
 		DB:       0, // default DB
 	})
 

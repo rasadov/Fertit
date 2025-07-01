@@ -80,10 +80,10 @@ func (h *AdminHandler) LoginPost(c *gin.Context) {
 	c.SetCookie(
 		"token",
 		token,
-		config.AppConfig.TokenExpirationSeconds,
+		config.TokenExpirationSeconds,
 		"/",
 		"",
-		!config.AppConfig.Debug,
+		!config.Debug,
 		true)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -122,7 +122,7 @@ func (h *AdminHandler) AdminDashboard(c *gin.Context) {
 		return
 	}
 
-	subscribers, err := h.subscriberService.GetSubscribers(page, elements)
+	subscribers, total, err := h.subscriberService.GetSubscribers(page, elements)
 	if err != nil {
 		log.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -135,6 +135,7 @@ func (h *AdminHandler) AdminDashboard(c *gin.Context) {
 		"Page":        page,
 		"Elements":    elements,
 		"Subscribers": subscribers,
+		"Total":       total,
 	})
 }
 
@@ -144,13 +145,15 @@ func (h *AdminHandler) SendEmail(c *gin.Context) {
 	body := c.PostForm("body")
 	isHtml := c.PostForm("html") == "1"
 
-	emails, err := h.subscriberService.GetSubscribersByCategory(category)
+	emails, total, err := h.subscriberService.GetSubscribersByCategory(category)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to retrieve subscribers",
 		})
 	}
+
+	log.Printf("Total subscribers: %d", total)
 
 	err = h.emailService.SendNewsletter(emails, subject, body, isHtml)
 

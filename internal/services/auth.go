@@ -30,10 +30,11 @@ func NewJWTAuthService(SecretKey, Issuer string, db *gorm.DB) AuthService {
 }
 
 func (s *authService) ValidateCredentials(username, password string) error {
-	user, err := s.userRepository.GetUser(username)
+	user := &models.User{
+		Username: username,
+	}
 
-	log.Println("Credentials:")
-	log.Println(username, password)
+	err := s.userRepository.GetUser(user)
 
 	if err != nil {
 		return err
@@ -57,7 +58,7 @@ func (s *authService) EnsureAdminUser(username, password string) error {
 		return errors.New("password length must be between 8 and 128")
 	}
 
-	_, err := s.userRepository.GetUser(username)
+	err := s.userRepository.GetUser(&models.User{Username: username})
 	if err == nil {
 		log.Println("Admin user already exists")
 		return nil
@@ -69,7 +70,7 @@ func (s *authService) EnsureAdminUser(username, password string) error {
 		return err
 	}
 
-	err = s.userRepository.CreateUser(models.User{
+	err = s.userRepository.CreateUser(&models.User{
 		Username: username,
 		Password: string(hashedPassword),
 	})
