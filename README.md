@@ -1,5 +1,9 @@
 # Mail List Management App
 
+![thumbnail](thumbnail.jpg)
+
+Try it out: [https://www.fertit.com](https://www.fertit.com)
+
 A Go-based web application for sending newsletters and allowing subscribers to manage their preferences. Designed for ease of deployment (Docker-ready), with a modern web UI and admin dashboard.
 
 ## Features
