@@ -28,7 +28,7 @@ A Go-based web application for sending newsletters and allowing subscribers to m
 ## Project Structure
 
 ```
-NewsletterManager/
+Fertit/
 ├── cmd/server/main.go        # Application entry point
 ├── internal/handlers/        # Route handlers (admin, subscriber, static)
 ├── internal/services/        # Business logic (auth, email, subscriber, rate limiting)
@@ -45,8 +45,8 @@ NewsletterManager/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/rasadov/MailManagerApp.git
-cd MailManagerApp
+git clone https://github.com/rasadov/Fertit.git
+cd Fertit
 ```
 
 ### 2. Configure Environment Variables
@@ -77,8 +77,8 @@ docker-compose up --build
 - Build and run:
 
 ```bash
-go build -o mailmanager ./cmd/server
-./mailmanager
+go build -o fertit ./cmd/server
+./fertit
 ```
 
 ## Usage

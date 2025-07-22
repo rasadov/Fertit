@@ -10,7 +10,7 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/mailmanager ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/fertit ./cmd/server
 
 # Use a smaller image for the final container
 FROM alpine:latest
@@ -21,7 +21,7 @@ WORKDIR /app
 RUN apk --no-cache add ca-certificates
 
 # Copy the binary from the builder stage
-COPY --from=builder /app/mailmanager .
+COPY --from=builder /app/fertit .
 
 # Copy web templates and static files
 COPY --from=builder /app/web /app/web
@@ -34,4 +34,4 @@ USER appuser
 EXPOSE 8080
 
 # Run the application
-CMD ["/app/mailmanager"]
+CMD ["/app/fertit"]

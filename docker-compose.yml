@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: "mailing_app"
+    container_name: "fertit_app"
     networks:
       - app-network
     ports:
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   postgres:
-    container_name: "mailing_db"
+    container_name: "fertit_db"
     image: postgres:14-alpine
     networks:
       - app-network
@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
 
   redis:
-    container_name: "mailing_redis"
+    container_name: "fertit_redis"
     image: redis:7-alpine
     networks:
       - app-network
